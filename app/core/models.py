@@ -1,10 +1,19 @@
 from django.db import models
 
+from decimal import Decimal
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
+
+# Constants
+ACCOUNT_TYPES = [
+    ('BORROWER', 'Borrower'),
+    ('LENDER', 'Lender'),
+]
+
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -38,6 +47,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+class Account(models.Model):
+    '''Model for a user account'''
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    type = models.CharField(max_length=255, choices=ACCOUNT_TYPES, default='BORROWER')
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal(0.00))
+
+    def __str__(self):
+        return self.user.email
 
 class MoneyRequest(models.Model):
     '''Model for a money request'''

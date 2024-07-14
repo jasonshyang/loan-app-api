@@ -61,3 +61,31 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(money_request), money_request.title)
+
+    def test_create_account(self):
+        '''Test creating a new account'''
+        borrower = get_user_model().objects.create_user( # type: ignore
+            'borrower@testing.com',
+            'testing*123',
+        )
+        borrow_account = models.Account.objects.create(
+            user=borrower,
+            type='BORROWER',
+            balance=Decimal('100.00'),
+        )
+
+        self.assertEqual(str(borrow_account), borrow_account.user.email)
+
+        lender = get_user_model().objects.create_user( # type: ignore
+            'lender@testing.com',
+            'testing*123',
+        )
+        lend_account = models.Account.objects.create(
+            user=lender,
+            type='LENDER',
+            balance=Decimal('100.00'),
+        )
+
+        self.assertEqual(str(lend_account), lend_account.user.email)
+
+
